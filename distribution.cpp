@@ -18,8 +18,6 @@
 
 #include"head.h"
 #include "globals.h"
-graphene X1, X2;
-graphene Phi1, Phi2;
 ofstream file_log_dis("distribution.log");
 ofstream file_ham("hamiltonian");
 
@@ -146,7 +144,7 @@ graphene MMT(graphene X, graphene K)
     return M(MT(X, K), K);
 }
 
-int force(graphene & F, graphene K)
+int force(graphene & X1, graphene & X2, graphene & Phi1, graphene & Phi2, graphene & F, graphene K)
 {
     graphene Y1, Y2;
     int flag;
@@ -171,7 +169,7 @@ int force(graphene & F, graphene K)
     return 1;
 }
 
-double hamiltonian(graphene X, graphene K)
+double hamiltonian(graphene & X1, graphene & X2, graphene & Phi1, graphene & Phi2, graphene X, graphene K)
 {
     double k, v, ham;
     int flag;
@@ -193,7 +191,7 @@ double hamiltonian(graphene X, graphene K)
     return ham;
 }
 
-int trajectory(graphene & K)
+int trajectory(graphene & X1, graphene & X2, graphene & Phi1, graphene & Phi2, graphene & K)
 {
     graphene Eta, P, Force;
     graphene K_t;
@@ -209,8 +207,8 @@ int trajectory(graphene & K)
     X2.set_zero();
     P.generate(1.0);
     K_t = K;
-    ham1 = hamiltonian(P, K);
-    flag = force(Force, K);
+    ham1 = hamiltonian(X1, X2, Phi1, Phi2, P, K);
+    flag = force(X1, X2, Phi1, Phi2, Force, K);
     if(!flag)
     {
         K = K_t;
@@ -221,7 +219,7 @@ int trajectory(graphene & K)
     for(int i = 0; i<(N_md-1); i++)
     {
         K = K+P*dt;
-        flag = force(Force, K);
+        flag = force(X1, X2, Phi1, Phi2, Force, K);
         if(!flag)
         {
             K = K_t;
@@ -231,7 +229,7 @@ int trajectory(graphene & K)
         P = P+Force*dt;
     }
     K = K+P*dt;
-    flag = force(Force, K);
+    flag = force(X1, X2, Phi1, Phi2, Force, K);
     if(!flag)
     {
         K = K_t;
@@ -239,7 +237,7 @@ int trajectory(graphene & K)
         return 0;
     }
     P = P+Force*(dt/2.0);
-    ham2 = hamiltonian(P, K);
+    ham2 = hamiltonian(X1, X2, Phi1, Phi2, P, K);
     r = (double)rand()/RAND_MAX;
     s = exp(ham1-ham2);
     file_log_dis<<ham1<<" "<<ham2<<" "<<r<<" "<<s;

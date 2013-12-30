@@ -23,6 +23,8 @@ ofstream file_log_main("main.log");
 int main()
 {
     static graphene K;
+    static graphene X1, X2;
+    static graphene Phi1, Phi2;
     time_t seed, start, end;
 		double* M_inverse = new double[TOT*TOT];
     seed = time(NULL);
@@ -31,10 +33,10 @@ int main()
     start = time(NULL);
     for(int i = 0; i<N_traj; i++)
     {
-        int flag = trajectory(K);
+        int flag = trajectory(X1, X2, Phi1, Phi2, K);
         while(!flag)
         {
-            flag = trajectory(K);
+            flag = trajectory(X1, X2, Phi1, Phi2, K);
         }
         file_log_main<<i<<endl;
     }
@@ -42,10 +44,10 @@ int main()
     {
         for(int j = 0; j<N_interval; j++)
         {
-            int flag = trajectory(K);
+            int flag = trajectory(X1, X2, Phi1, Phi2, K);
             while(!flag)
             {
-                flag = trajectory(K);
+                flag = trajectory(X1, X2, Phi1, Phi2, K);
             }
         }
 //				int flag = spin_cor(K, M_inverse);

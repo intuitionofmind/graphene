@@ -5,7 +5,7 @@ CXX = g++
 CXXFLAGS = $(INC) -fopenmp -O2 -Wall -pedantic -ansi #-std=c++11 
 OBJS = main.o function_class.o distribution.o twopoint.o ##acceleration.o check.o spin_cor.o
 
-TARGET = Npeak2
+TARGET = Graphene 
 
 all:$(TARGET)
 $(TARGET):$(OBJS)

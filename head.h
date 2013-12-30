@@ -25,15 +25,15 @@ const int N_md = 10;
 const int N_sample = 30;
 const int N_interval = 40;
 const int N_iter = 10000;
-const int N_threads = 4;
+const int N_threads = 2;
 const int REAL = 0;
 const int IMAG = 1;
 const double beta = 10.0;
 const double t = 1.0;
-const double U = 2.0;
+const double U = 0.1;
 const double lam = 0.0;
 const double mu = 0.0;
-const double dt = 0.0002;
+const double dt = 0.002;
 const double Accuracy = 1e-14;
 const double Omega0 = 2*Pi/double(N_tau);
 const double Omega1 = 2*Pi/double(N_R1); //for fourier transform
@@ -108,9 +108,9 @@ graphene T(graphene X, graphene K);
 graphene M(graphene X, graphene K);
 graphene MT(graphene X, graphene K);
 graphene MMT(graphene X, graphene K);
-int force(graphene & F, graphene K);
-double hamiltonian(graphene X, graphene K);
-int trajectory(graphene & K);
+int force(graphene & X1, graphene & X2, graphene & Phi1, graphene & Phi2, graphene & F, graphene K);
+double hamiltonian(graphene & X1, graphene & X2, graphene & Phi1, graphene & Phi2, graphene X, graphene K);
+int trajectory(graphene & X1, graphene & X2, graphene & Phi1, graphene & Phi2, graphene & K);
 
 //acceleration
 complex g0(int k0);
