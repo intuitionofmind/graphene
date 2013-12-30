@@ -96,12 +96,6 @@ public:
 	complex operator /(double x);
 };
 
-//variables
-extern graphene X1, X2;
-extern graphene Phi1, Phi2;
-extern graphene Kesi[N_sample];
-extern int all, acc;
-
 //main.cpp
 double rand_gauss();
 double dot(graphene X, graphene Y);

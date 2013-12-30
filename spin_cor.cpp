@@ -5,7 +5,7 @@
  *
  *    Description:  project_graphene
  *
- *        Version:  1.0
+ *        Version:  1.1
  *        Created:  04/09/2013 02:34:48 PM
  *       Revision:  none
  *       Compiler:  gcc
@@ -17,6 +17,7 @@
  */
 
 #include"head.h"
+#include "globals.h"
 int sam = 0;
 ofstream file_spin_log("spin_cor.log");
 

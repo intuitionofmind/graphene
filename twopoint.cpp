@@ -1,4 +1,5 @@
 #include"head.h"
+#include "globals.h"
 
 int ffts(graphene & X, graphene & Y) //fft for SPACE(N_R1*N_R2) lattice of graphene
 {

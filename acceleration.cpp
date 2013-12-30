@@ -5,7 +5,7 @@
  *
  *    Description:  project_graphene
  *
- *        Version:  1.0
+ *        Version:  1.1
  *        Created:  04/09/2013 02:30:51 PM
  *       Revision:  none
  *       Compiler:  gcc
@@ -17,6 +17,8 @@
  */
 
 #include"head.h"
+#include "globals.h"
+
 graphene X1_tilde, X2_tilde;
 graphene Phi1_tilde, Phi2_tilde;
 ofstream file_log_tilde("tilde.log");

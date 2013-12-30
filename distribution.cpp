@@ -17,6 +17,7 @@
  */
 
 #include"head.h"
+#include "globals.h"
 graphene X1, X2;
 graphene Phi1, Phi2;
 ofstream file_log_dis("distribution.log");
