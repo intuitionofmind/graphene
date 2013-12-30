@@ -51,14 +51,13 @@ int Search(int x, int y, int z, int t)
     return index;
 }
 
-int MPI_Search(int x, int y, int z, int t, int numProcs)
+int MPI_Search(int x, int y, int z, int t, int myTau)
 {
 		int index;
-		int MPI_N_tau = N_tau/numProcs; //Dimension N_tau has to be changed.
     x = (x+N_R1)%N_R1;
     y = (y+N_R2)%N_R2;
     z = (z+N_R3)%N_R3;
-    t = (t+MPI_N_tau)%MPI_N_tau;
+    t = (t+myTau)%myTau;
     index = z+y*N_R3+x*N_R2*N_R3+t*N_R1*N_R2*N_R3;
     return index;
 }

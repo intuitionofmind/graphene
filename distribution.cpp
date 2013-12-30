@@ -85,8 +85,8 @@ int T(double* X, double* Y, double* K, int numProcs, int myID)
             {
                 for(int k = 0; k<N_R3; k++)
                 {
-										int index = MPI_Search(i, j, k, l, numProcs);
-										myArrayY[index] = -t_hat*(myArrayX[MPI_Search(i, j, (k+1), l, numProcs)]+myArrayX[MPI_Search(i+(2*k-1), j, k+1, l, numProcs)]+myArrayX[MPI_Search(i, j+(2*k-1), k+1, l, numProcs)])+(U_hat/2.0-mu_hat+U_hat_sq*myArrayK[index])*myArrayX[index];
+										int index = MPI_Search(i, j, k, l, myTau);
+										myArrayY[index] = -t_hat*(myArrayX[MPI_Search(i, j, (k+1), l, myTau)]+myArrayX[MPI_Search(i+(2*k-1), j, k+1, l, myTau)]+myArrayX[MPI_Search(i, j+(2*k-1), k+1, l, myTau)])+(U_hat/2.0-mu_hat+U_hat_sq*myArrayK[index])*myArrayX[index];
                 }
             }
         }
@@ -125,7 +125,7 @@ int M(double* X, double* Y, double* K, int numProcs, int myID)
 				{
 						for(int k = 0; k<N_R3; k++)
 						{
-								int index = MPI_Search(i, j, k, 0, numProcs);
+								int index = MPI_Search(i, j, k, 0, myTau);
 								sendBuf[index] = myArrayX[index];
 						}
 				}
@@ -144,25 +144,25 @@ int M(double* X, double* Y, double* K, int numProcs, int myID)
             {
                 for(int k = 0; k<N_R3; k++)
                 {
-										int index = MPI_Search(i, j, k, l, numProcs);
+										int index = MPI_Search(i, j, k, l, myTau);
                     double d, t1, t2 = 0.0;
 										if(l == (myTau-1))
 										{
 												if(myID == (numProcs-1))  //anti-boundary condition
 												{
-														d = -recvBuf[MPI_Search(i, j, k, 0, numProcs)]-myArrayX[index];
+														d = -recvBuf[MPI_Search(i, j, k, 0, myTau)]-myArrayX[index];
 												}
 												else
 												{
-														d = recvBuf[MPI_Search(i, j, k, 0, numProcs)]-myArrayX[index];
+														d = recvBuf[MPI_Search(i, j, k, 0, myTau)]-myArrayX[index];
 												}
 										}
 										else
 										{
-												d = myArrayX[MPI_Search(i, j, k, l+1, numProcs)]-myArrayX[index];
+												d = myArrayX[MPI_Search(i, j, k, l+1, myTau)]-myArrayX[index];
 										}
-										t1 = -t_hat*(myArrayX[MPI_Search(i, j, (k+1), l, numProcs)]+myArrayX[MPI_Search(i+(2*k-1), j, k+1, l, numProcs)]+myArrayX[MPI_Search(i, j+(2*k-1), k+1, l, numProcs)])+(U_hat/2.0-mu_hat+U_hat_sq*myArrayK[index])*myArrayX[index];
-										t2 = -t_hat*(myArrayT[MPI_Search(i, j, (k+1), l, numProcs)]+myArrayT[MPI_Search(i+(2*k-1), j, k+1, l, numProcs)]+myArrayT[MPI_Search(i, j+(2*k-1), k+1, l, numProcs)])+(U_hat/2.0-mu_hat+U_hat_sq*myArrayK[index])*myArrayT[index];
+										t1 = -t_hat*(myArrayX[MPI_Search(i, j, (k+1), l, myTau)]+myArrayX[MPI_Search(i+(2*k-1), j, k+1, l, myTau)]+myArrayX[MPI_Search(i, j+(2*k-1), k+1, l, myTau)])+(U_hat/2.0-mu_hat+U_hat_sq*myArrayK[index])*myArrayX[index];
+										t2 = -t_hat*(myArrayT[MPI_Search(i, j, (k+1), l, myTau)]+myArrayT[MPI_Search(i+(2*k-1), j, k+1, l, myTau)]+myArrayT[MPI_Search(i, j+(2*k-1), k+1, l, myTau)])+(U_hat/2.0-mu_hat+U_hat_sq*myArrayK[index])*myArrayT[index];
                     myArrayY[index] = d+t1-0.5*t2;
                 }
             }
@@ -206,8 +206,8 @@ int MT(double* X, double* Y, double* K, int numProcs, int myID)
 				{
 						for(int k = 0; k<N_R3; k++)
 						{
-								int index1 = MPI_Search(i, j, k, 0, numProcs);
-								int index2 = MPI_Search(i, j, k, myTau-1, numProcs);
+								int index1 = MPI_Search(i, j, k, 0, myTau);
+								int index2 = MPI_Search(i, j, k, myTau-1, myTau);
 								sendBuf[index1] = myArrayX[index2];
 						}
 				}
@@ -226,25 +226,25 @@ int MT(double* X, double* Y, double* K, int numProcs, int myID)
             {
                 for(int k = 0; k<N_R3; k++)
                 {
-										int index = MPI_Search(i, j, k, l, numProcs);
+										int index = MPI_Search(i, j, k, l, myTau);
                     double d, t1, t2 = 0.0;
 										if(!l)
 										{
 												if(myID == ROOT) //anti-boundary condition
 												{
-														d = -recvBuf[MPI_Search(i, j, k, 0, numProcs)]-myArrayX[index];
+														d = -recvBuf[MPI_Search(i, j, k, 0, myTau)]-myArrayX[index];
 												}
 												else
 												{
-														d = recvBuf[MPI_Search(i, j, k, 0, numProcs)]-myArrayX[index];
+														d = recvBuf[MPI_Search(i, j, k, 0, myTau)]-myArrayX[index];
 												}
 										}
 										else
 										{
-												d = myArrayX[MPI_Search(i, j, k, l-1, numProcs)]-myArrayX[index];
+												d = myArrayX[MPI_Search(i, j, k, l-1, myTau)]-myArrayX[index];
 										}
-										t1 = -t_hat*(myArrayX[MPI_Search(i, j, (k+1), l, numProcs)]+myArrayX[MPI_Search(i+(2*k-1), j, k+1, l, numProcs)]+myArrayX[MPI_Search(i, j+(2*k-1), k+1, l, numProcs)])+(U_hat/2.0-mu_hat+U_hat_sq*myArrayK[index])*myArrayX[index];
-										t2 = -t_hat*(myArrayT[MPI_Search(i, j, (k+1), l, numProcs)]+myArrayT[MPI_Search(i+(2*k-1), j, k+1, l, numProcs)]+myArrayT[MPI_Search(i, j+(2*k-1), k+1, l, numProcs)])+(U_hat/2.0-mu_hat+U_hat_sq*myArrayK[index])*myArrayT[index];
+										t1 = -t_hat*(myArrayX[MPI_Search(i, j, (k+1), l, myTau)]+myArrayX[MPI_Search(i+(2*k-1), j, k+1, l, myTau)]+myArrayX[MPI_Search(i, j+(2*k-1), k+1, l, myTau)])+(U_hat/2.0-mu_hat+U_hat_sq*myArrayK[index])*myArrayX[index];
+										t2 = -t_hat*(myArrayT[MPI_Search(i, j, (k+1), l, myTau)]+myArrayT[MPI_Search(i+(2*k-1), j, k+1, l, myTau)]+myArrayT[MPI_Search(i, j+(2*k-1), k+1, l, myTau)])+(U_hat/2.0-mu_hat+U_hat_sq*myArrayK[index])*myArrayT[index];
                     myArrayY[index] = d+t1-0.5*t2;
                 }
             }

@@ -22,95 +22,89 @@
 
 int main(int argc, char** argv)
 {
-        MPI_Init(&argc, &argv);
-        int numProcs, myID;
-        MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
-        MPI_Comm_rank(MPI_COMM_WORLD, &myID);
-        time_t seed;
-        int flag;
-        double* X1 = new double[TOT];
-        double* X2 = new double[TOT];
-        double* Phi1 = new double[TOT];
-        double* Phi2 = new double[TOT];
-        double* K = new double[TOT];
-        double* M_Inverse = new double[TOT*TOT];
-        int acc = 0;
-        int all = 0;
-        seed = time(NULL);
-        srand(seed);
-        MPI_Generate(K, 1.0, numProcs, myID);
-        double start = MPI_Wtime();
-        for(int i = 0; i<N_traj; i++)
+		MPI_Init(&argc, &argv);
+    int numProcs, myID;
+		MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
+		MPI_Comm_rank(MPI_COMM_WORLD, &myID);
+    time_t seed;
+		int flag;
+		double* X1 = new double[TOT];
+		double* X2 = new double[TOT];
+		double* Phi1 = new double[TOT];
+		double* Phi2 = new double[TOT];
+		double* K = new double[TOT];
+		double* M_Inverse = new double[TOT*TOT];
+		int acc = 0;
+		int all = 0;
+    seed = time(NULL);
+    srand(seed);
+		MPI_Generate(K, 1.0, numProcs, myID);
+		double start = MPI_Wtime();
+    for(int i = 0; i<N_traj; i++)
+    {
+        flag = Trajectory(X1, X2, Phi1, Phi2, K, numProcs, myID);
+        while(!flag)
         {
             flag = Trajectory(X1, X2, Phi1, Phi2, K, numProcs, myID);
-            while(!flag)
-            {
-                flag = Trajectory(X1, X2, Phi1, Phi2, K, numProcs, myID);
-                if(myID == ROOT)
-                {
-                    ofstream file_Log("tracjectroy_num.log", ios_base::app);
-                    file_Log<<" | "<<acc<<"  "<<all<<endl;
-                    file_Log.close();
-                    }
-                all++;
-                }
-            if(myID == ROOT)
-            {
-                ofstream file_Log("tracjectroy_num.log", ios_base::app);
-                file_Log<<" | "<<acc<<"  "<<all<<endl;
-                file_Log.close();
-                }
-            if(myID == ROOT)
-            {
-                ofstream file_Log("tracjectroy_num.log", ios_base::app);
-                file_Log<<" | "<<acc<<"  "<<all<<endl;
-                file_Log.close();
-                }
-            acc++;
-            all++;
-            }
-        for(int i = 0; i<N_sample; i++)
+    				if(myID == ROOT)
+		    		{
+								ofstream file_Log("tracjectroy_num.log", ios_base::app);
+				    		file_Log<<acc<<"  "<<all<<endl;
+								file_Log.close();
+			    	}
+						all++;
+        }
+				if(myID == ROOT)
+				{
+						ofstream file_Log("tracjectroy_num.log", ios_base::app);
+				    file_Log<<acc<<"  "<<all<<endl;
+						file_Log.close();
+			  }
+				acc++;
+				all++;
+    }
+    for(int i = 0; i<N_sample; i++)
+    {
+        for(int j = 0; j<N_interval; j++)
         {
-            for(int j = 0; j<N_interval; j++)
+            flag = Trajectory(X1, X2, Phi1, Phi2, K, numProcs, myID);
+						while(!flag)
             {
                 flag = Trajectory(X1, X2, Phi1, Phi2, K, numProcs, myID);
-                while(!flag)
-                {
-                    flag = Trajectory(X1, X2, Phi1, Phi2, K, numProcs, myID);
-                    if(myID == ROOT)
-                    {
-                        ofstream file_Log("tracjectroy_num.log", ios_base::app);
-                        file_Log<<" | "<<acc<<"  "<<all<<endl;
-                        file_Log.close();
-                        }
-                    all++;
-                    }
-                if(myID == ROOT)
-                {
-                    ofstream file_Log("tracjectroy_num.log", ios_base::app);
-                    file_Log<<" | "<<acc<<"  "<<all<<endl;
-                    file_Log.close();
-                    }
-                acc++;
-                all++;
-                }
-            //	flag = spin_cor(K, M_Inverse);
-            flag = Twopoint(K, numProcs, myID);
-            if(!flag)
-            {
-                break;
-                }
+	       			 	if(myID == ROOT)
+		        		{
+										ofstream file_Log("tracjectroy_num.log", ios_base::app);
+				        		file_Log<<acc<<"  "<<all<<endl;
+										file_Log.close();
+			        	}
+						   	all++;
             }
-        delete [] X1;
-                delete [] X2;
-                delete [] Phi1;
-                delete [] Phi2;
-          delete [] M_Inverse;
-                double end = MPI_Wtime();
-                if(myID == ROOT)
-                {
-                        Info(start, end, acc, all);
-                        }
-                MPI_Finalize();
+						if(myID == ROOT)
+						{
+								ofstream file_Log("tracjectroy_num.log", ios_base::app);
+								file_Log<<acc<<"  "<<all<<endl;
+								file_Log.close();
+						}
+						acc++;
+						all++;
+        }
+//	flag = spin_cor(K, M_Inverse);
+        flag = Twopoint(K, numProcs, myID);
+        if(!flag)
+        {
+            break;
+        }
+    }
+		delete [] X1;
+		delete [] X2;
+		delete [] Phi1;
+		delete [] Phi2;
+	  delete [] M_Inverse;
+		double end = MPI_Wtime();
+		if(myID == ROOT)
+		{
+				Info(start, end, acc, all);
+		}
+		MPI_Finalize();
     return 1;
 }

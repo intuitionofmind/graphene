@@ -88,8 +88,8 @@ int IFFT_Space(double* X, double* Y)
             {
                 for(int j = 0; j<N_R2; j++)
                 {
-										int indexFFT = i*N_R2+j;
-										int indexData = Search(i, j, k, l);
+					int indexFFT = i*N_R2+j;
+					int indexData = Search(i, j, k, l);
                     in[indexFFT][0] = X[indexData];
                     in[indexFFT][1] = Y[indexData];
                 }
@@ -99,8 +99,8 @@ int IFFT_Space(double* X, double* Y)
             {
                 for(int j=0; j<N_R2; j++)
                 {
-  									int indexFFT = i*N_R2+j;
-										int indexData = Search(i, j, k, l);
+  					int indexFFT = i*N_R2+j;
+					int indexData = Search(i, j, k, l);
                     X[indexData] = out[indexFFT][0]/sqrt(N_R1*N_R2); //Pay attention to that the FFTW computes an unnormalized DFT.
                     Y[indexData] = out[indexFFT][1]/sqrt(N_R1*N_R2);
                 }
@@ -138,27 +138,27 @@ int Twopoint(double* K, int numProcs, int myID)
                 MT(XX, X, K, numProcs, myID);
                 MT(YY, Y, K, numProcs, myID);
                 FFT_Space(X, Y);
-								if(!myID)
-								{
-										ofstream file_re("twopoint_re.dat", ios_base::app);
-										ofstream file_im("twopoint_im.dat", ios_base::app);
+				if(!myID)
+				{
+					ofstream file_re("twopoint_re.dat", ios_base::app);
+					ofstream file_im("twopoint_im.dat", ios_base::app);
                     for(int l = 0; l<N_tau; l++)
                     {
-												int indexPrint = Search(i, j, k, l);
-												file_re<<setprecision(15)<<X[indexPrint]<<endl;
-												file_im<<setprecision(15)<<Y[indexPrint]<<endl;
+						int indexPrint = Search(i, j, k, l);
+						file_re<<setprecision(15)<<X[indexPrint]<<endl;
+						file_im<<setprecision(15)<<Y[indexPrint]<<endl;
                     }
-										file_re.close();
-										file_im.close();
-								}
-								else
-								{
-										for(int l = 0; l<N_tau; l++)
-										{
-												int indexPrint = Search(i, j, k, l);
-												indexPrint++;
-										}
-								}
+						file_re.close();
+						file_im.close();
+				}
+				else
+				{
+					for(int l = 0; l<N_tau; l++)
+					{
+						int indexPrint = Search(i, j, k, l);
+						indexPrint++;
+					}
+				}
             }
         }
     }
