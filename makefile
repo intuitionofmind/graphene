@@ -30,4 +30,4 @@ twopoint.o:twopoint.cpp
 #	$(CXX) $(CXXFLAGS) -c $< -o $@ $(LIB)
 
 clean:
-	rm -f $(TARGET) *.o *.log sample *.dat
+	rm -f $(TARGET) *.o *.log sample *.out

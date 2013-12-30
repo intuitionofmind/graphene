@@ -94,7 +94,7 @@ int MPI_Search(int x, int y, int z, int t, int myTau)
 
 void Info(double start, double end, int acc, int all)
 {
-        ofstream file_Info("Information");
+        ofstream file_Info("information", ios_base::app);
         file_Info<<"size: "<<N_R1<<"*"<<N_R2<<endl;
         file_Info<<"beta = "<<beta<<endl;
         file_Info<<"N_tau = "<<N_tau<<endl;
@@ -104,7 +104,7 @@ void Info(double start, double end, int acc, int all)
         file_Info<<"N_traj = "<<N_traj<<endl;
         file_Info<<"N_interval = "<<N_interval<<endl;
         file_Info<<"N_sample = "<<N_sample<<endl;
-        file_Info<<"Acc = "<<acc<<"  "<<"All = "<<all<<" Ratio = "<<(double(acc)/double(all))*100<<"%"<<endl;
-        file_Info<<"Time = "<<(end-start)/60.0<<" min"<<endl;
+        file_Info<<"acc = "<<acc<<"  "<<"all = "<<all<<" ratio = "<<(double(acc)/double(all))*100<<"%"<<endl;
+        file_Info<<"time = "<<(end-start)/60.0<<" min"<<endl<<endl;
         file_Info.close();
         }
