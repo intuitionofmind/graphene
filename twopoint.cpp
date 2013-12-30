@@ -1,14 +1,31 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  Twopoint.cpp
+ *
+ *    Description:  project_Graphene
+ *
+ *        Version:  1.0
+ *        Created:  04/09/2013 02:34:48 PM
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Wei Zheng (), intuitionofmind@gmail.com
+ *   Organization:  School of Physics, Peking University
+ *
+ * =====================================================================================
+ */
 #include"head.h"
-#include "globals.h"
+#include"parameters.h"
+#include"declaration.h"
 
-int ffts(graphene & X, graphene & Y) //fft for SPACE(N_R1*N_R2) lattice of graphene
+int FFT_Space(double* X, double* Y) //fft for SPACE(N_R1*N_R2) lattice of Graphene
 {
 		fftw_complex *in, *out;  
 		fftw_plan p;
 		in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex)*N_R1*N_R2);
 		out = (fftw_complex*)fftw_malloc(sizeof(fftw_complex)*N_R1*N_R2);
 		p = fftw_plan_dft_2d(N_R1, N_R2, in, out, FFTW_FORWARD, FFTW_ESTIMATE | FFTW_DESTROY_INPUT);
-
 		if((in == NULL) || (out == NULL))
 		{
         fftw_destroy_plan(p);
@@ -16,19 +33,18 @@ int ffts(graphene & X, graphene & Y) //fft for SPACE(N_R1*N_R2) lattice of graph
 		    fftw_free(out);
 				return 0;
 		}
-
     for(int k = 0; k<N_R3; k++)
     {
         for(int l = 0; l<N_tau; l++)
         {
-						int index = 0;
             for(int i = 0; i<N_R1; i++)
             {
                 for(int j = 0; j<N_R2; j++)
                 {
-										index = i*N_R2+j;
-                    in[index][0] = X.value(i, j, k, l);
-                    in[index][1] = Y.value(i, j, k, l);
+										int indexFFT = i*N_R2+j;
+										int indexData = Search(i, j, k, l);
+                    in[indexFFT][0] = X[indexData];
+                    in[indexFFT][1] = Y[indexData];
                 }
             }
 						fftw_execute(p);
@@ -36,28 +52,27 @@ int ffts(graphene & X, graphene & Y) //fft for SPACE(N_R1*N_R2) lattice of graph
             {
                 for(int j=0; j<N_R2; j++)
                 {
-                    index = i*N_R2+j;
-                    X.value(i, j, k, l) = out[index][0]/sqrt(N_R1*N_R2); //pay attention to that the FFTW computes an unnormalized DFT!!!
-                    Y.value(i, j, k, l) = out[index][1]/sqrt(N_R1*N_R2);
+                    int indexFFT = i*N_R2+j;
+										int indexData = Search(i, j, k, l);
+                    X[indexData] = out[indexFFT][0]/sqrt(N_R1*N_R2); //pay attention to that the FFTW computes an unnormalized DFT!!!
+                    Y[indexData] = out[indexFFT][1]/sqrt(N_R1*N_R2);
                 }
             }
         }
     }
-
 		fftw_destroy_plan(p);
 		fftw_free(in);
 		fftw_free(out);
 		return 1;
 }
 
-int iffts(graphene & X, graphene & Y)
+int IFFT_Space(double* X, double* Y)
 {
 		fftw_complex *in, *out;  
 		fftw_plan p;
 		in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex)*N_R1*N_R2);
 		out = (fftw_complex*)fftw_malloc(sizeof(fftw_complex)*N_R1*N_R2);
 		p = fftw_plan_dft_2d(N_R1, N_R2, in, out, FFTW_BACKWARD, FFTW_ESTIMATE | FFTW_DESTROY_INPUT);
-
 		if((in == NULL) || (out == NULL))
 		{
         fftw_destroy_plan(p);
@@ -65,19 +80,18 @@ int iffts(graphene & X, graphene & Y)
 		    fftw_free(out);
 				return 0;
 		}
-
     for(int k = 0; k<N_R3; k++)
     {
         for(int l = 0; l<N_tau; l++)
         {
-						int index = 0;
             for(int i = 0; i<N_R1; i++)
             {
                 for(int j = 0; j<N_R2; j++)
                 {
-										index = i*N_R2+j;
-                    in[index][0] = X.value(i, j, k, l);
-                    in[index][1] = Y.value(i, j, k, l);
+										int indexFFT = i*N_R2+j;
+										int indexData = Search(i, j, k, l);
+                    in[indexFFT][0] = X[indexData];
+                    in[indexFFT][1] = Y[indexData];
                 }
             }
 						fftw_execute(p);
@@ -85,56 +99,72 @@ int iffts(graphene & X, graphene & Y)
             {
                 for(int j=0; j<N_R2; j++)
                 {
-                    index = i*N_R2+j;
-                    X.value(i, j, k, l) = out[index][0]/sqrt(N_R1*N_R2); //pay attention to that the FFTW computes an unnormalized DFT!!!
-                    Y.value(i, j, k, l) = out[index][1]/sqrt(N_R1*N_R2);
+  									int indexFFT = i*N_R2+j;
+										int indexData = Search(i, j, k, l);
+                    X[indexData] = out[indexFFT][0]/sqrt(N_R1*N_R2); //Pay attention to that the FFTW computes an unnormalized DFT.
+                    Y[indexData] = out[indexFFT][1]/sqrt(N_R1*N_R2);
                 }
             }
         }
     }
-
 		fftw_destroy_plan(p);
 		fftw_free(in);
 		fftw_free(out);
 		return 1;
 }
 
-int twopoint(graphene K)
+int Twopoint(double* K, int numProcs, int myID)
 {
-		ofstream file_re("twopoint_re.dat", ios_base::app);
-    ofstream file_im("twopoint_im.dat", ios_base::app);
-    
-    for(int k = 0; k<N_R3; k++)
+		double* X = new double[TOT];
+		double* Y = new double[TOT];
+		double* XX = new double[TOT];
+		double* YY = new double[TOT];
+		for(int k = 0; k<N_R3; k++)
     {
         for(int i = 0; i<N_R1; i++)
         {
             for(int j = 0; j<N_R2; j++)
             {
-                int flag1, flag2;
-                graphene X, Y, XX, YY;
-                int index = search(i, j, k, 0);
-                X.set_one(index);
-                Y.set_zero();
-                iffts(X, Y);
-                flag1 = CG(X, K, XX, MMT);
-                flag2 = CG(Y, K, YY, MMT);
+	              int index = Search(i, j, k, 0);
+								MPI_Setone(X, index, numProcs, myID);
+								MPI_Setzero(Y, numProcs, myID);
+                IFFT_Space(X, Y);
+                int flag1 = CG(X, XX, K, numProcs, myID);
+                int flag2 = CG(Y, YY, K, numProcs, myID);
                 if(!(flag1 && flag2))
                 {
                     return 0;
                 }
-                X = MT(XX, K);
-                Y = MT(YY, K);
-                ffts(X, Y);
-                for(int l = 0; l<N_tau; l++)
-                {
-                    file_re<<setprecision(15)<<X.value(i, j, k, l)<<endl;
-                    file_im<<setprecision(15)<<Y.value(i, j, k, l)<<endl;
-                }
+                MT(XX, X, K, numProcs, myID);
+                MT(YY, Y, K, numProcs, myID);
+                FFT_Space(X, Y);
+								if(!myID)
+								{
+										ofstream file_re("twopoint_re.dat", ios_base::app);
+										ofstream file_im("twopoint_im.dat", ios_base::app);
+                    for(int l = 0; l<N_tau; l++)
+                    {
+												int indexPrint = Search(i, j, k, l);
+												file_re<<setprecision(15)<<X[indexPrint]<<endl;
+												file_im<<setprecision(15)<<Y[indexPrint]<<endl;
+                    }
+										file_re.close();
+										file_im.close();
+								}
+								else
+								{
+										for(int l = 0; l<N_tau; l++)
+										{
+												int indexPrint = Search(i, j, k, l);
+												indexPrint++;
+										}
+								}
             }
         }
     }
-
-		file_re.close();
-		file_im.close();
+		delete [] X;
+		delete [] Y;
+		delete [] XX;
+		delete [] YY;
     return 1;
 }

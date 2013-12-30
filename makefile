@@ -1,11 +1,11 @@
-INC = -I/home/skysniper/fftw/include/
-LIB = -lm -L/home/skysniper/fftw/lib/ -lfftw3
+INC = -I/vol-th/home/lattice/zhengwei/fftw/include/
+LIB = -lm -L/vol-th/home/lattice/zhengwei/fftw/lib/ -lfftw3
 
-CXX = g++
-CXXFLAGS = $(INC) -fopenmp -O2 -Wall -pedantic -ansi #-std=c++11 
-OBJS = main.o function_class.o distribution.o twopoint.o ##acceleration.o check.o spin_cor.o
+CXX = mpicxx 
+CXXFLAGS = $(INC) -O2 -Wall -ansi -funroll-loops #-std=c++11 
+OBJS = main.o operation.o extra.o distribution.o twopoint.o ##acceleration.o check.o spin_cor.o
 
-TARGET = Graphene 
+TARGET = Graphene
 
 all:$(TARGET)
 $(TARGET):$(OBJS)
@@ -13,8 +13,10 @@ $(TARGET):$(OBJS)
 
 main.o:main.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@ $(LIB)
-function_class.o:function_class.cpp
+operation.o:operation.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@ $(LIB)
+extra.o:extra.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@ $(LIB) 
 distribution.o:distribution.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@ $(LIB) 
 twopoint.o:twopoint.cpp

@@ -3,9 +3,9 @@
  *
  *       Filename:  check.cpp
  *
- *    Description:  project_graphene
+ *    Description:  project_Graphene
  *
- *        Version:  1.1
+ *        Version:  1.0
  *        Created:  04/09/2013 02:34:07 PM
  *       Revision:  none
  *       Compiler:  gcc
@@ -17,7 +17,7 @@
  */
 
 #include"head.h"
-#include "globals.h"
+#include"globals.h"
 
 double F_function()
 {
@@ -66,9 +66,12 @@ int deal_sample()
     }
     fin.close();
 		ave=sum/(TOT*N_sample);
-    file_check_first_order<<"xi_pertubation= "<<-(U_hat_sq*F_function())<<endl;
-		file_check_first_order<<"average= "<<ave<<endl;
-		sum=0;
+		if(!myID)
+		{
+				file_check_first_order<<"xi_pertubation= "<<-(U_hat_sq*F_function())<<endl;
+				file_check_first_order<<"average= "<<ave<<endl;
+		}
+ 		sum=0;
 		for(int i=0; i<TOT*N_sample; i++)
 		{
 				sum+=(s[i]-ave)*(s[i]-ave);

@@ -3,9 +3,9 @@
  *
  *       Filename:  main.cpp
  *
- *    Description:  project_graphene
+ *    Description:  project_Graphene
  *
- *        Version:  1.1
+ *        Version:  1.0
  *        Created:  04/09/2013 02:26:50 PM
  *       Revision:  none
  *       Compiler:  gcc
@@ -17,97 +17,100 @@
  */
 
 #include"head.h"
-#include "globals.h"
-ofstream file_log_main("main.log");
+#include"parameters.h"
+#include"declaration.h"
 
-int main()
+int main(int argc, char** argv)
 {
-    static graphene K;
-    static graphene X1, X2;
-    static graphene Phi1, Phi2;
-    time_t seed, start, end;
-		double* M_inverse = new double[TOT*TOT];
-    seed = time(NULL);
-    srand(seed);
-    K.generate(1);
-    start = time(NULL);
-    for(int i = 0; i<N_traj; i++)
-    {
-        int flag = trajectory(X1, X2, Phi1, Phi2, K);
-        while(!flag)
+        MPI_Init(&argc, &argv);
+        int numProcs, myID;
+        MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
+        MPI_Comm_rank(MPI_COMM_WORLD, &myID);
+        time_t seed;
+        int flag;
+        double* X1 = new double[TOT];
+        double* X2 = new double[TOT];
+        double* Phi1 = new double[TOT];
+        double* Phi2 = new double[TOT];
+        double* K = new double[TOT];
+        double* M_Inverse = new double[TOT*TOT];
+        int acc = 0;
+        int all = 0;
+        seed = time(NULL);
+        srand(seed);
+        MPI_Generate(K, 1.0, numProcs, myID);
+        double start = MPI_Wtime();
+        for(int i = 0; i<N_traj; i++)
         {
-            flag = trajectory(X1, X2, Phi1, Phi2, K);
-        }
-        file_log_main<<i<<endl;
-    }
-    for(int i = 0; i<N_sample; i++)
-    {
-        for(int j = 0; j<N_interval; j++)
-        {
-            int flag = trajectory(X1, X2, Phi1, Phi2, K);
+            flag = Trajectory(X1, X2, Phi1, Phi2, K, numProcs, myID);
             while(!flag)
             {
-                flag = trajectory(X1, X2, Phi1, Phi2, K);
+                flag = Trajectory(X1, X2, Phi1, Phi2, K, numProcs, myID);
+                if(myID == ROOT)
+                {
+                    ofstream file_Log("tracjectroy_num.log", ios_base::app);
+                    file_Log<<" | "<<acc<<"  "<<all<<endl;
+                    file_Log.close();
+                    }
+                all++;
+                }
+            if(myID == ROOT)
+            {
+                ofstream file_Log("tracjectroy_num.log", ios_base::app);
+                file_Log<<" | "<<acc<<"  "<<all<<endl;
+                file_Log.close();
+                }
+            if(myID == ROOT)
+            {
+                ofstream file_Log("tracjectroy_num.log", ios_base::app);
+                file_Log<<" | "<<acc<<"  "<<all<<endl;
+                file_Log.close();
+                }
+            acc++;
+            all++;
             }
-        }
-//				int flag = spin_cor(K, M_inverse);
-        int flag = twopoint(K);
-        if(!flag)
+        for(int i = 0; i<N_sample; i++)
         {
-            file_log_main<<"Failure."<<endl;
-            break;
-        }
-        file_log_main<<(N_traj+i)<<endl;
-    }
-		delete [] M_inverse;
-    end = time(NULL);
-    info(start, end);
-    return 0;
+            for(int j = 0; j<N_interval; j++)
+            {
+                flag = Trajectory(X1, X2, Phi1, Phi2, K, numProcs, myID);
+                while(!flag)
+                {
+                    flag = Trajectory(X1, X2, Phi1, Phi2, K, numProcs, myID);
+                    if(myID == ROOT)
+                    {
+                        ofstream file_Log("tracjectroy_num.log", ios_base::app);
+                        file_Log<<" | "<<acc<<"  "<<all<<endl;
+                        file_Log.close();
+                        }
+                    all++;
+                    }
+                if(myID == ROOT)
+                {
+                    ofstream file_Log("tracjectroy_num.log", ios_base::app);
+                    file_Log<<" | "<<acc<<"  "<<all<<endl;
+                    file_Log.close();
+                    }
+                acc++;
+                all++;
+                }
+            //	flag = spin_cor(K, M_Inverse);
+            flag = Twopoint(K, numProcs, myID);
+            if(!flag)
+            {
+                break;
+                }
+            }
+        delete [] X1;
+                delete [] X2;
+                delete [] Phi1;
+                delete [] Phi2;
+          delete [] M_Inverse;
+                double end = MPI_Wtime();
+                if(myID == ROOT)
+                {
+                        Info(start, end, acc, all);
+                        }
+                MPI_Finalize();
+    return 1;
 }
-
-double rand_gauss()
-{
-    double u,v;
-    u = (double)rand()/RAND_MAX;
-    v = (double)rand()/RAND_MAX;
-    return sqrt(-2*log(u))*cos(2*Pi*v);
-}
-
-double dot(graphene X, graphene Y)
-{
-    double res = 0;
-    for(int i = 0; i<TOT; i++)
-    {
-        res = res+X.take(i)*Y.take(i);
-    }
-    return res;
-}
-
-int search(int x, int y, int z, int t)
-{
-    int index;
-    x = (x+N_R1)%N_R1;
-    y = (y+N_R2)%N_R2;
-    z = (z+N_R3)%N_R3;
-    t = (t+N_tau)%N_tau;
-    index = z+y*N_R3+x*N_R2*N_R3+t*N_R1*N_R2*N_R3;
-    return index;
-}
-
-void info(time_t start, time_t end)
-{
-    ofstream file_Info("Info");
-    file_Info<<"size: "<<N_R1<<"*"<<N_R2<<endl;
-    file_Info<<"beta = "<<beta<<endl;
-    file_Info<<"N_tau = "<<N_tau<<endl;
-    file_Info<<"U = "<<U<<endl;
-    file_Info<<"t = "<<t<<endl;
-    file_Info<<"dt = "<<dt<<endl;
-    file_Info<<"N_traj = "<<N_traj<<endl;
-    file_Info<<"N_interval = "<<N_interval<<endl;
-    file_Info<<"N_sample = "<<N_sample<<endl;
-    file_Info<<"Acc = "<<acc<<"  "<<"All = "<<all<<" Ratio = "<<(double(acc)/double(all))*100<<"%"<<endl;
-    file_Info<<"Time = "<<(end-start)/60.0<<" min"<<endl;
-    file_Info.close();
-}
-
