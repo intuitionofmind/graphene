@@ -21,7 +21,8 @@
 
 double RandomGauss()
 {
-        mt19937 generator(time(NULL));
+        random_device rd;
+        mt19937 generator(rd());
         normal_distribution<double> dis(0.0, 1.0);
         return dis(generator);
         }
@@ -37,6 +38,35 @@ int MPI_Generate(double* X, double sigma, int numProcs, int myID)
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Allgather(myArray, length, MPI_DOUBLE, X, length, MPI_DOUBLE, MPI_COMM_WORLD);
         delete [] myArray;
+        return 1;
+        }
+
+int MPI_Output(double* X, int myID)
+{
+        if(ROOT == myID)
+        {
+            ofstream file_auxi("auxiliary", ios_base::out);
+            for(int i = 0; i<TOT; i++)
+            {
+                file_auxi<<setprecision(15)<<X[i]<<endl;
+                }
+            file_auxi.close();
+            }
+        return 1;
+        }
+
+int MPI_Input(double *X)
+{
+        ifstream file_auxi("auxiliary");
+        if(!file_auxi.is_open())
+        {
+            return 0;
+            }
+        for(int i = 0; i<TOT; i++)
+        {
+            file_auxi>>X[i];
+            }
+        file_auxi.close();
         return 1;
         }
 

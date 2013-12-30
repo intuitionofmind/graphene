@@ -26,7 +26,6 @@ int main(int argc, char** argv)
         int numProcs, myID;
         MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
         MPI_Comm_rank(MPI_COMM_WORLD, &myID);
-        time_t seed;
         int flag;
         double* X1 = new double[TOT];
         double* X2 = new double[TOT];
@@ -36,9 +35,8 @@ int main(int argc, char** argv)
         double* M_Inverse = new double[TOT*TOT];
         int acc = 0;
         int all = 0;
-        seed = time(NULL);
-        srand(seed);
         MPI_Generate(K, 1.0, numProcs, myID);
+        MPI_Input(K);
         double start = MPI_Wtime();
         for(int i = 0; i<N_traj; i++)
         {
@@ -95,7 +93,7 @@ int main(int argc, char** argv)
                 break;
                 }
             }
-        delete [] X1;
+    delete [] X1;
     delete [] X2;
     delete [] Phi1;
     delete [] Phi2;
@@ -105,6 +103,7 @@ int main(int argc, char** argv)
     {
             Info(start, end, acc, all);
             }
+    MPI_Output(K, myID);
     MPI_Finalize();
     return 1;
 }

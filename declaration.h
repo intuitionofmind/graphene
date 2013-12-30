@@ -14,6 +14,8 @@ int MPI_Setone(double *X, int index, int numProcs, int myID);
 //extra.cpp
 int MPI_Setone(double *X, int index, int numProcs, int myID);
 int MPI_Generate(double* X, double sigma, int numProcs, int myID);
+int MPI_Output(double* X, int myID);
+int MPI_Input(double* X);
 int Search(int x, int y, int z, int t);
 int MPI_Search(int x, int y, int z, int t, int myTau);
 void Info(double start, double end, int acc, int all);

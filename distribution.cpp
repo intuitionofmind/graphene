@@ -391,7 +391,8 @@ int Trajectory(double* X1, double* X2, double* Phi1, double* Phi2, double* K, in
             double r = 0.0;
             if(myID == ROOT)
             {
-                mt19937 generator(time(NULL));
+                random_device rd;
+                mt19937 generator(rd());
                 uniform_real_distribution<double> dis(0.0, 1.0);
                 r = dis(generator);
                 }
