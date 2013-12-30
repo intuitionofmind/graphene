@@ -1,11 +1,11 @@
-INC = -I/vol-th/home/lattice/zhengwei/fftw/include/
-LIB = -lm -L/vol-th/home/lattice/zhengwei/fftw/lib/ -lfftw3
+INC = -I/vol-th/home/lattice/zhengwei/fftw/include/ -I/usr/local/mpi-gcc46/include/
+LIB = -lm -L/vol-th/home/lattice/zhengwei/fftw/lib/ -lfftw3 -L/usr/local/mpi-gcc46/lib/
 
 CXX = mpicxx 
-CXXFLAGS = $(INC) -O2 -Wall -ansi -funroll-loops #-std=c++11 
+CXXFLAGS = $(INC) -O2 -Wall -ansi -funroll-loops -std=gnu++0x 
 OBJS = main.o operation.o extra.o distribution.o twopoint.o ##acceleration.o check.o spin_cor.o
 
-TARGET = Graphene
+TARGET = graphene
 
 all:$(TARGET)
 $(TARGET):$(OBJS)
