@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 	int acc = 0;
 	int all = 0;
 	MPI_Generate(K, 1.0, numProcs, myID);
-	//	MPI_Input(K);
+	MPI_Input(K);
 	double start = MPI_Wtime();
 	for(int i = 0; i<N_traj; i++)
 	{

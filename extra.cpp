@@ -55,7 +55,7 @@ int MPI_Output(double* X, int myID)
         return 1;
         }
 
-int MPI_Input(double *X)
+int MPI_Input(double* X, int numProcs, int myID)
 {
         ifstream file_auxi("auxiliary");
         if(!file_auxi.is_open())
