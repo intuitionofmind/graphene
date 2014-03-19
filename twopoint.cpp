@@ -145,8 +145,8 @@ int Twopoint(double* K, int numProcs, int myID)
                         for(int l = 0; l<N_tau; l++)
                         {
                             int indexPrint = Search(i, j, k, l);
-                            file_re<<setprecision(15)<<X[indexPrint]<<endl;
-                            file_im<<setprecision(15)<<Y[indexPrint]<<endl;
+                            file_re.write((char*)(&X[indexPrint]), sizeof(X[indexPrint]));
+                            file_im.write((char*)(&Y[indexPrint]), sizeof(Y[indexPrint]));
                             }
                         file_re.close();
                         file_im.close();

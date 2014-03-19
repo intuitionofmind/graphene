@@ -1,5 +1,5 @@
-const int N_R1 = 7;
-const int N_R2 = 7;
+const int N_R1 = 6;
+const int N_R2 = 6;
 const int N_R3 = 2;
 const int N_tau = 100;
 const int N_traj = 500;
