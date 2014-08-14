@@ -724,12 +724,12 @@ graphene M_tilde(graphene X, graphene K)
     graphene R;
     graphene L;
     /*   graphene Ph1, Ph2, Ph3, Ph4, Ph5;
-       Ph1=T0(T0(X));
-       Ph2=K*X;
-       Ph3=T0(Ph2);
-       Ph4=K*(T0(X));
-       Ph5=K*Ph2;
-       R=X+M0I(Ph1)*0.5-M0I(Ph2)*U_hat_sq+M0I(Ph3)*U_hat_sq*0.5+M0I(Ph4)*U_hat_sq*0.5-M0I(Ph5)*U_hat*0.5; */
+         Ph1=T0(T0(X));
+         Ph2=K*X;
+         Ph3=T0(Ph2);
+         Ph4=K*(T0(X));
+         Ph5=K*Ph2;
+         R=X+M0I(Ph1)*0.5-M0I(Ph2)*U_hat_sq+M0I(Ph3)*U_hat_sq*0.5+M0I(Ph4)*U_hat_sq*0.5-M0I(Ph5)*U_hat*0.5; */
     graphene Ph;
     Ph=(K*U_hat_sq)*X;
     R=M0I(Ph)+X;
@@ -740,12 +740,12 @@ graphene MT_tilde(graphene X, graphene K)
 {
     graphene R;
     /*  graphene Ph1, Ph2, Ph3, Ph4, Ph5;
-      Ph1=T0(T0(X));
-      Ph2=K*X;
-      Ph3=T0(Ph2);
-      Ph4=K*(T0(X));
-      Ph5=K*Ph2;
-      R=X+M0IT(Ph1)*0.5-M0IT(Ph2)*U_hat_sq+M0IT(Ph3)*U_hat_sq*0.5+M0IT(Ph4)*U_hat_sq*0.5-M0IT(Ph5)*U_hat*0.5; */
+        Ph1=T0(T0(X));
+        Ph2=K*X;
+        Ph3=T0(Ph2);
+        Ph4=K*(T0(X));
+        Ph5=K*Ph2;
+        R=X+M0IT(Ph1)*0.5-M0IT(Ph2)*U_hat_sq+M0IT(Ph3)*U_hat_sq*0.5+M0IT(Ph4)*U_hat_sq*0.5-M0IT(Ph5)*U_hat*0.5; */
     graphene Ph, L;
     Ph=(K*U_hat_sq)*X;
     R=M0IT(Ph)+X;
@@ -767,14 +767,14 @@ int force_tilde(graphene & F, graphene K)
         return 0;
     }
     Y1=MT_tilde(X1_tilde, K);
-   // Y1=Y1-T(Y1, K);
+    // Y1=Y1-T(Y1, K);
     flag=CG(Phi1_tilde, K, X1_tilde, MMT_tilde);
     if(!flag)
     {
         return 0;
     }
     Y2=MT_tilde(X2_tilde, K);
-   // Y2=Y2-T(Y2, K);
+    // Y2=Y2-T(Y2, K);
     for(int i=0; i<TOT; i++)
     {
         F.take(i)=-K.take(i)+2*U_hat_sq*(X1_tilde.take(i)*Y1.take(i)+X2_tilde.take(i)*Y2.take(i));

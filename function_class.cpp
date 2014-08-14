@@ -21,7 +21,7 @@
 
 void graphene::output()
 {
-		ofstream file_Kesi("Kesi");
+    ofstream file_Kesi("Kesi");
     for(int i=0; i<TOT; i++)
     {
         file_Kesi<<setprecision(15)<<p[i]<<endl;
@@ -31,12 +31,12 @@ void graphene::output()
 
 void graphene::sample()
 {
-		ofstream file_sample("sample", ios_base::app);
+    ofstream file_sample("sample", ios_base::app);
     for(int i=0; i<TOT; i++)
     {
         file_sample<<setprecision(15)<<p[i]<<endl;
     }
-		file_sample.close();
+    file_sample.close();
 }
 
 int graphene::input()
